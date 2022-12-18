@@ -84,15 +84,24 @@
                     </tr>
                     <tr>
                         <td class="td_left">
-                            <label for="check">验证码</label>
+                            <label for="checkCode">验证码</label>
                         </td>
                         <td class="td_right check">
-                            <input type="text" id="check" name="check" class="check">
-                            <img src="checkCode" height="32px" alt="" onclick="changeCheckCode(this)">
+                            <input type="text" id="checkCode" name="checkCode" class="check">
+                            <img id="checkCodeImg" src="#" height="32px" width="100px" alt="" onclick="changeCheckCode(this)">
                             <script type="text/javascript">
                                 //图片点击事件
                                 function changeCheckCode(img) {
-                                    img.src = "checkCode?" + new Date().getTime();
+                                    axios.get("checkCode?time=" + new Date().getTime())
+                                        .then(function (response) {
+                                            const data = response.data;
+                                            img.src = data.data.checkCodeBase64;
+                                    }).catch(function (error) {
+                                        console.log(error);
+                                    });
+                                }
+                                window.onload = function () {
+                                    changeCheckCode(document.getElementById("checkCodeImg"));
                                 }
                             </script>
                         </td>
@@ -230,8 +239,8 @@
                         if (data.code == 200) {
                             //注册成功
                             alert("注册成功");
-                            //跳转到登录页面
-                            location.href = "/login.html";
+                            //跳转到注册成功页面
+                            location.href = "register_ok.html";
                         } else {
                             //注册失败
                             $("#msg").text(data.message);

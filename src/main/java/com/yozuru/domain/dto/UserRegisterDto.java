@@ -22,4 +22,6 @@ public class UserRegisterDto {
     private String telephone;
 
     private String email;
+
+    private String checkCode;
 }

@@ -6,6 +6,7 @@ import com.yozuru.domain.dto.UserRegisterDto;
 import com.yozuru.domain.enums.HttpCodeEnum;
 import com.yozuru.domain.vo.UserLoginVo;
 import com.yozuru.exception.BusinessException;
+import com.yozuru.service.CheckCodeService;
 import com.yozuru.service.UserService;
 import com.yozuru.service.impl.LoginServiceImpl;
 import com.yozuru.util.SecurityUtils;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author Yozuru
  */
@@ -23,21 +26,30 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     @Autowired
+    private HttpServletRequest request;
+    @Autowired
     private UserService userService;
     @Autowired
     private LoginServiceImpl loginService;
+    @Autowired
+    private CheckCodeService checkCodeService;
 
     @PostMapping("/register")
     public ResponseResult<Object> register(@RequestBody UserRegisterDto userRegisterDto) {
-        return userService.register(userRegisterDto);
+        if(checkCodeService.checkCode(request.getRemoteAddr(),userRegisterDto.getCheckCode())) {
+            return userService.register(userRegisterDto);
+        } else {
+            throw new BusinessException(HttpCodeEnum.CHECK_CODE_ERROR);
+        }
     }
 
     @PostMapping("/login")
     public ResponseResult<UserLoginVo> login(@RequestBody UserLoginDto loginDto){
-        if (!Strings.hasText(loginDto.getUserName())){
-            throw new BusinessException(HttpCodeEnum.REQUIRE_USERNAME);
+        if(checkCodeService.checkCode(request.getRemoteAddr(),loginDto.getCheckCode())) {
+            return loginService.login(loginDto);
+        } else {
+            throw new BusinessException(HttpCodeEnum.CHECK_CODE_ERROR);
         }
-        return loginService.login(loginDto);
     }
 
     @PostMapping("/logout")

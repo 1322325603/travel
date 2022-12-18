@@ -18,9 +18,10 @@ public enum HttpCodeEnum {
     USERNAME_EXIST(501,"用户名已存在"),
     PHONENUMBER_EXIST(502,"手机号已存在"),
     EMAIL_EXIST(503, "邮箱已存在"),
-    ILLEGAL_PARAMETER(501,"参数格式错误！"),
     REQUIRE_USERNAME(504, "必需填写用户名"),
-    LOGIN_ERROR(505,"用户名或密码错误");
+    LOGIN_ERROR(505,"用户名或密码错误"),
+    ILLEGAL_PARAMETER(506,"参数格式错误！"),
+    CHECK_CODE_ERROR(507,"验证码错误！");
     private final int code;
     private final String message;
 

@@ -43,11 +43,20 @@
         			<input name="password" type="text" placeholder="请输入密码" autocomplete="off">
         			<div class="verify">
 					<input name="check" type="text" placeholder="请输入验证码" autocomplete="off">
-					<span><img src="checkCode" alt="" onclick="changeCheckCode(this)"></span>
+					<span><img src="#" alt="" id="checkCodeImg" onclick="changeCheckCode(this)"></span>
 					<script type="text/javascript">
 						//图片点击事件
 						function changeCheckCode(img) {
-							img.src="checkCode?"+new Date().getTime();
+							axios.get("checkCode?time=" + new Date().getTime())
+									.then(function (response) {
+										const data = response.data;
+										img.src = data.data.checkCodeBase64;
+									}).catch(function (error) {
+								console.log(error);
+							});
+						}
+						window.onload = function () {
+							changeCheckCode(document.getElementById("checkCodeImg"));
 						}
 					</script>
 			</div>
@@ -98,7 +107,7 @@
 				action:"login",
 				username:username,
 				password:password,
-				check:check
+				checkCode:check
 			}).then(function(response){
 				//获取响应数据
 				var data = response.data;

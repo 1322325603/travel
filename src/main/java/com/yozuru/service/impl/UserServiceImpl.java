@@ -3,6 +3,7 @@ package com.yozuru.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yozuru.domain.ResponseResult;
+import com.yozuru.domain.constant.SystemConstant;
 import com.yozuru.domain.dto.UserRegisterDto;
 import com.yozuru.domain.enums.HttpCodeEnum;
 import com.yozuru.mapper.UserMapper;
@@ -34,7 +35,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return checkResult;
         }
         User user = BeanCopyUtil.copyBean(userRegisterDto, User.class);
+        //密码加密
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        //设置用户状态为未激活
+        user.setStatus(SystemConstant.USER_INACTIVE);
         save(user);
         return ResponseResult.success();
     }

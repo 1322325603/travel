@@ -41,7 +41,7 @@ public class LoginServiceImpl implements LoginService {
     public ResponseResult<UserLoginVo> login(UserLoginDto loginDto) {
         //通过用户名和密码来生成本次验证的token
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getUserName(), loginDto.getPassword());
+                new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
         //将本次验证的token传入AuthenticationManager，它将会帮我们进行验证
         Authentication authenticate=null;
         try {

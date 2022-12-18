@@ -13,4 +13,8 @@ public class RedisConstant {
      * 图片验证码的Key前缀
      */
     public static final String CHECK_CODE_KEY_PREFIX = "checkCode_";
+    /**
+     * 邮箱验证码的Key前缀
+     */
+    public static final String EMAIL_CODE_KEY_PREFIX = "emailCode_";
 }

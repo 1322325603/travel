@@ -5,5 +5,5 @@ package com.yozuru.service;
  */
 
 public interface EmailService {
-    boolean sendActivationEmail(String email,String uid);
+    boolean sendActiveEmail(Integer uid,String name,String email);
 }

@@ -21,7 +21,9 @@ public enum HttpCodeEnum {
     REQUIRE_USERNAME(504, "必需填写用户名"),
     LOGIN_ERROR(505,"用户名或密码错误"),
     ILLEGAL_PARAMETER(506,"参数格式错误！"),
-    CHECK_CODE_ERROR(507,"验证码错误！");
+    CHECK_CODE_ERROR(507,"验证码错误！"),
+    EMAIL_SEND_ERROR(508,"邮件发送失败！"),
+    USER_NOT_ACTIVE(509,"用户尚未激活！");
     private final int code;
     private final String message;
 

@@ -10,19 +10,17 @@ import com.yozuru.service.CheckCodeService;
 import com.yozuru.service.UserService;
 import com.yozuru.service.impl.LoginServiceImpl;
 import com.yozuru.util.SecurityUtils;
-import io.jsonwebtoken.lang.Strings;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Yozuru
  */
-@RestController
+@Controller
 public class UserController {
 
     @Autowired
@@ -35,6 +33,7 @@ public class UserController {
     private CheckCodeService checkCodeService;
 
     @PostMapping("/register")
+    @ResponseBody
     public ResponseResult<Object> register(@RequestBody UserRegisterDto userRegisterDto) {
         if(checkCodeService.checkCode(request.getRemoteAddr(),userRegisterDto.getCheckCode())) {
             return userService.register(userRegisterDto);
@@ -44,6 +43,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @ResponseBody
     public ResponseResult<UserLoginVo> login(@RequestBody UserLoginDto loginDto){
         if(checkCodeService.checkCode(request.getRemoteAddr(),loginDto.getCheckCode())) {
             return loginService.login(loginDto);
@@ -53,11 +53,23 @@ public class UserController {
     }
 
     @PostMapping("/logout")
+    @ResponseBody
     public ResponseResult<Object> logout(){
         return loginService.logout();
     }
     @GetMapping("/test")
     public String test(){
         return SecurityUtils.getLoginUser().getUser().getName();
+    }
+    @GetMapping("/activation")
+    public String activation(Integer uid,String code){
+        if(Strings.isEmpty(code)||uid==null){
+            return null;
+        }
+        if(userService.activate(uid,code)){
+            return "redirect:/activation_ok.html";
+        }else {
+            return "redirect:/activation_error.html";
+        }
     }
 }

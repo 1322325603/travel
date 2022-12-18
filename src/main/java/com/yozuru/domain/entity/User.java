@@ -2,6 +2,10 @@ package com.yozuru.domain.entity;
 
 import java.util.Date;
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,8 +22,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @AllArgsConstructor
 @TableName("tab_user")
 public class User  {
-    
-    private Integer uid;
+    @TableId(value = "uid",type = IdType.AUTO)
+    private Integer id;
     
     private String username;
     

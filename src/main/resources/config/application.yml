@@ -5,9 +5,12 @@ spring:
     active: dev
   main:
     banner-mode: off
+  mail:
+    host: smtp.qq.com
+    username: 3503726156@qq.com
+    password: yrybcmhcbiyldbid
 
 
 logging:
   level:
     root: info
-

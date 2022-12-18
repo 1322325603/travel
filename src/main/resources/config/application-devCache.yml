@@ -36,3 +36,15 @@ jetcache:
         minIdle: 1
         maxIdle: 2
         maxTotal: 10
+    emailCode:
+      type: redis
+      host: localhost
+      port: 6379
+      keyConvertor: fastjson
+      valueEncoder: kryo
+      valueDecoder: kryo
+      expireAfterWriteInMillis: 120000
+      poolConfig:
+        minIdle: 1
+        maxIdle: 2
+        maxTotal: 10

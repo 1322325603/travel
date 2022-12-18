@@ -22,6 +22,6 @@ public class SecurityUtils {
 
 
     public static Integer getUserId() {
-        return getLoginUser().getUser().getUid();
+        return getLoginUser().getUser().getId();
     }
 }

@@ -15,5 +15,6 @@ import com.yozuru.domain.entity.User;
 public interface UserService extends IService<User> {
 
     ResponseResult<Object> register(UserRegisterDto userRegisterDto);
+    boolean activate(Integer uid,String code);
 }
 

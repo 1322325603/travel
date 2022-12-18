@@ -110,7 +110,7 @@
                         <td class="td_left">
                         </td>
                         <td class="td_right check">
-                            <input type="submit" class="submit" value="注册">
+                            <input type="submit" id="register_button" class="submit" value="注册">
                             <span id="msg" style="color: red;"></span>
                         </td>
                     </tr>
@@ -230,15 +230,15 @@
         $("#registerForm").submit(function () {
             //获取表单数据
             var formData = $(this).serializeJson();
+            document.getElementById("register_button").disabled = true;
             if(checkUsername() && checkPassword() && checkName() && checkEmail() && checkPhone()){
                 //发送ajax请求
                 axios.post("register", formData)
                     .then(function (response) {
+                        document.getElementById("register_button").disabled = false;
                         //获取响应数据
                         const data = response.data;
                         if (data.code == 200) {
-                            //注册成功
-                            alert("注册成功");
                             //跳转到注册成功页面
                             location.href = "register_ok.html";
                         } else {

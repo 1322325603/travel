@@ -5,12 +5,14 @@ import com.alicp.jetcache.anno.CacheType;
 import com.alicp.jetcache.anno.CreateCache;
 import com.yozuru.domain.ResponseResult;
 import com.yozuru.domain.constant.RedisConstant;
+import com.yozuru.domain.constant.SystemConstant;
 import com.yozuru.domain.dto.UserLoginDto;
 import com.yozuru.domain.entity.LoginUser;
 import com.yozuru.domain.enums.HttpCodeEnum;
 import com.yozuru.domain.vo.UserLoginVo;
 import com.yozuru.exception.BusinessException;
 import com.yozuru.exception.SystemException;
+import com.yozuru.service.EmailService;
 import com.yozuru.service.LoginService;
 import com.yozuru.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +37,14 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private AuthenticationManager manager;
 
+    @Autowired
+    private EmailService emailService;
+
     @CreateCache(area = "userLogin", name = RedisConstant.USER_KEY_PREFIX,cacheType = CacheType.REMOTE)
     private Cache<Integer, LoginUser> userDetailCache;
+
+    @CreateCache(area = "emailCode", name = RedisConstant.EMAIL_CODE_KEY_PREFIX,cacheType = CacheType.REMOTE)
+    private Cache<Integer, String> emailCodeCache;
 
     public ResponseResult<UserLoginVo> login(UserLoginDto loginDto) {
         //通过用户名和密码来生成本次验证的token
@@ -56,9 +64,19 @@ public class LoginServiceImpl implements LoginService {
         //如果验证成功，Authentication中将包含了查询到的用户详细信息。
         //Authentication中Principal变量储存的是UserDetailsService的查询结果。
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        //判断用户是否已激活
+        if (!SystemConstant.USER_ACTIVE.equals(loginUser.getUser().getStatus())) {
+            String s = emailCodeCache.get(loginUser.getUser().getId());
+            //若缓存中没有验证码，说明验证邮件已过期，则重新发送验证邮件
+            if (Objects.isNull(s)) {
+                emailService.sendActiveEmail(loginUser.getUser().getId(),loginUser.getUser().getName(),loginUser.getUser().getEmail());
+            }
+            //则抛出异常
+            throw new BusinessException(HttpCodeEnum.USER_NOT_ACTIVE);
+        }
 
         //获得本次登录的用户id
-        Integer id = loginUser.getUser().getUid();
+        Integer id = loginUser.getUser().getId();
         //把用户详细信息存入redis
         userDetailCache.put(id, loginUser);
         //生成id的jwt
@@ -77,7 +95,7 @@ public class LoginServiceImpl implements LoginService {
         }
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         //获取userid
-        Integer userId = loginUser.getUser().getUid();
+        Integer userId = loginUser.getUser().getId();
         //删除redis中的用户信息
         userDetailCache.remove(userId);
         return ResponseResult.success();

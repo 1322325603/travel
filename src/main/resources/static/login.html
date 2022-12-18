@@ -61,7 +61,7 @@
 					</script>
 			</div>
 			<div class="submit_btn">
-        				<button type="button">登录</button>
+        				<button type="button" id="login_button">登录</button>
         				<div class="auto_login">
         					<input type="checkbox" name="" class="checkbox">
         					<span>自动登录</span>
@@ -94,14 +94,15 @@
 			var username = $("input[name='username']").val();
 			var password = $("input[name='password']").val();
 			var check = $("input[name='check']").val();
+			document.getElementById("login_button").disabled = true;
 			//发送ajax请求
 			axios.post("/login", {
 						action: "login",
 						username: username,
 						password: password,
 						checkCode: check
-					}
-			).then(function(response){
+					}).then(function(response){
+				document.getElementById("login_button").disabled = false;
 				//获取响应数据
 				var data = response.data;
 				//判断是否登录成功
@@ -114,7 +115,7 @@
 					window.location.href="/index.html";
 				}else{
 					//登录失败，显示错误信息
-					$("#errorMsg").html(data.msg);
+					$("#errorMsg").html(data.message);
 				}
 			}).catch(function(error){
 				console.log(error);

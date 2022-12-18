@@ -12,6 +12,6 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public boolean sendActivationEmail(String email, String uid) {
-
+    return false;
     }
 }

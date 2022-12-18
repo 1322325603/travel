@@ -1,0 +1,24 @@
+server:
+  port: 7777
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/travel?characterEncoding=utf-8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      username: root
+      password: 123456
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: delFlag
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+    banner: false
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

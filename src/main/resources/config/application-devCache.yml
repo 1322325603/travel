@@ -1,0 +1,26 @@
+jetcache:
+  statIntervalMinutes: 10
+  areaInCacheName: false
+
+  local:
+    default:
+      type: linkedhashmap
+      keyConvertor: fastjson
+      valueEncoder: java
+      valueDecoder: java
+      limit: 100
+      keyPrefix: "sms_"
+      expireAfterAccessInMillis: 60000
+  remote:
+    userLogin:
+      type: redis
+      host: localhost
+      port: 6379
+      keyConvertor: fastjson
+      valueEncoder: kryo
+      valueDecoder: kryo
+      expireAfterWriteInMillis: 86400000
+      poolConfig:
+        minIdle: 1
+        maxIdle: 2
+        maxTotal: 10

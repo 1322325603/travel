@@ -1,0 +1,9 @@
+server:
+  port: 80
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false

@@ -8,7 +8,11 @@ public class EmailConstant {
     /**
      * 发送方的邮箱
      */
-    public static final String SENDER_EMAIL = "3503726156@qq.com(黑马旅游网)";
+    public static final String SENDER_EMAIL = "3503726156@qq.com";
+    /**
+     * 发送方的邮箱的授权码
+     */
+    public static final String SENDER_NAME = "黑马旅游网";
     /**
      * 激活邮件的主题
      */

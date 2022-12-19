@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.UUID;
 
@@ -37,12 +38,13 @@ public class EmailServiceImpl implements EmailService {
         String link = getActivationEmailLink(uid,code);
         String content = getActivationEmailContent(name,link);
         try {
-            helper.setFrom(EmailConstant.SENDER_EMAIL);
+            helper.setFrom(EmailConstant.SENDER_EMAIL,EmailConstant.SENDER_NAME);
             helper.setTo(email);
             helper.setSubject(EmailConstant.ACTIVATION_EMAIL_SUBJECT);
             helper.setText(content,true);
             mailSender.send(mimeMessage);
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
         emailCodeCache.put(uid,code);

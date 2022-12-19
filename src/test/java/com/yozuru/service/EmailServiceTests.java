@@ -9,4 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @SpringBootTest
 public class EmailServiceTests {
+    //@Autowired
+    //private EmailService emailService;
+    //@Test
+    //public void testSendEmail() {
+    //    //emailService.sendActiveEmail(18,"董建缨","1322325603@qq.com");
+    //}
 }

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>黑马旅游网-账号管理</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" href="css/index.css">
+    <style>
+        .table tbody tr td {
+            vertical-align: middle;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<!--引入头部-->
+<div id="header"></div>
+<section id="content">
+    <section class="hemai_jx">
+        <div class="jx_top">
+            <div class="jx_tit">
+                <img src="images/icon_7.jpg" alt="">
+                <span>账号管理</span>
+            </div>
+        </div>
+        <div align="center">
+            <table class="table table-bordered table-striped table-hover table-condensed text-center">
+                <tbody id="users">
+                <tr style="height: 40px;font-size: 17px;">
+                    <th style="width: 10% ">序号</th>
+                    <th style="width: 20%">用户名</th>
+                    <th style="width: 15%">姓名</th>
+                    <th style="width: 20%">邮箱</th>
+                    <th style="width: 15%">电话</th>
+                    <th>操作</th>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">编辑用户</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="edit_id">
+                        <div class="form-group">
+                            <label for="edit_username">用户名</label>
+                            <input type="text" name="username" class="form-control" id="edit_username" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_password">密码</label>
+                            <input type="text" name="edit_password" class="form-control" id="edit_password"
+                                   placeholder="新密码">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_name">姓名</label>
+                            <input type="text" name="edit_name" class="form-control" id="edit_name" placeholder="姓名">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_email">邮箱</label>
+                            <input type="text" name="edit_email" class="form-control" id="edit_email" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_telephone">手机号码</label>
+                            <input type="text" name="edit_telephone" class="form-control" id="edit_telephone"
+                                   placeholder="手机号码">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="hideEdit()" style="margin-right: 0;">取消</button>
+                        <button class="btn btn-primary" onclick="submitEdit()" style="margin-right: 0;">确认修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="js/axios-0.18.0.js"></script>
+        <script src="js/jquery-3.3.1.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            $(function list() {
+                let token = localStorage.getItem("token");
+                axios.get("/user_management/list", {
+                    headers: {
+                        'token': token
+                    }
+                }).then(function (response) {
+                    let data = response.data;
+                    if (data.code === 200) {
+                        data = data.data;
+                        for (let i = 0; i < data.length; i++) {
+                            let index = i + 1;
+                            let html = "";
+                            //根据状态决定背景色
+                            if (data[i].status === "0") {
+                                html += "<tr class='warning' style='font-size: medium'>";
+                            } else if (data[i].status === "2") {
+                                html += "<tr class='danger' style='font-size: medium'>";
+                            } else {
+                                html += "<tr style='font-size: medium'>";
+                            }
+                            //基本信息
+                            html += "<td>" +
+                                index +
+                                "</td><td>" +
+                                data[i].username +
+                                "</td><td>" +
+                                data[i].name +
+                                "</td><td>" +
+                                data[i].email +
+                                "</td><td>" +
+                                data[i].telephone;
+                            //操作
+                            if (data[i].status === "1") {
+                                html += "</td><td><button type='button' class='btn btn-danger' onclick='toForbid(" + data[i].id + ")'>" + "禁用" + "</button>"
+                            } else if (data[i].status === "0") {
+                                html += "</td><td><button type='button' class='btn btn-success' onclick='toActivation(" + data[i].id + ")'>" + "激活" + "</button>"
+                            } else {
+                                html += "</td><td><button type='button' class='btn btn-success' onclick='toActivation(" + data[i].id + ")'>" + "启用" + "</button>"
+                            }
+                            html += "<button type='button' class='btn btn-info' onclick='adminEdit(" + data[i].id + ")'>" + "编辑" + "</button></td></tr>"
+                            $("#users").append(html);
+                        }
+                    } else {
+                        alert(data.message);
+                    }
+                })
+            })
+
+            function toActivation(id) {
+                if (confirm("确定要启用该账户吗？")) {
+                    let token = localStorage.getItem("token");
+                    axios.get("/user_management/activation/" + id, {
+                        headers: {
+                            'token': token
+                        }
+                    }).then(function (response) {
+                        let data = response.data;
+                        if (data.code === 200) {
+                            window.location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                }
+            }
+
+            function toForbid(id) {
+                if (confirm("确定要禁用该账户吗？")) {
+                    let token = localStorage.getItem("token");
+                    axios.get("/user_management/forbid/" + id, {
+                        headers: {
+                            'token': token
+                        }
+                    }).then(function (response) {
+                        let data = response.data;
+                        if (data.code === 200) {
+                            window.location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                }
+            }
+
+            function submitEdit() {
+                if (checkName() && checkPhone() && checkPassword()) {
+                    let id = $("#edit_id").val();
+                    let password = $("#edit_password").val();
+                    let name = $("#edit_name").val();
+                    let telephone = $("#edit_telephone").val();
+                    if (password === "") {
+                        password = null;
+                    }
+                    let token = localStorage.getItem("token");
+                    axios.put("/user_management", {
+                        id: id,
+                        password: password,
+                        name: name,
+                        telephone: telephone
+                    }, {
+                        headers: {
+                            'token': token
+                        }
+                    }).then(function (response) {
+                        let data = response.data;
+                        if (data.code === 200) {
+                            window.location.reload();
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                }
+            }
+
+            function adminEdit(id) {
+                $("#editModal").modal("show");
+                let token = localStorage.getItem("token");
+                axios.get("/user_management/info/" + id, {
+                    headers: {
+                        'token': token
+                    }
+                }).then(function (response) {
+                    let data = response.data;
+                    if (data.code === 200) {
+                        data = data.data;
+                        $("#edit_id").val(data.id);
+                        $("#edit_username").val(data.username);
+                        $("#edit_name").val(data.name);
+                        $("#edit_email").val(data.email);
+                        $("#edit_telephone").val(data.telephone);
+                    } else {
+                        alert(data.message);
+                    }
+                })
+            }
+
+            function hideEdit() {
+                $("#editModal").modal("hide");
+            }
+
+            function checkPassword() {
+                //获取密码
+                const password = $("#edit_password").val();
+                //正则表达式
+                const reg_password = /^[a-zA-Z0-9]{6,12}$/;
+                const flag = reg_password.test(password) || password === "";
+                if (flag) {
+                    $("#edit_password").css("border", "");
+                } else {
+
+                    $("#edit_password").css("border", "1px solid red");
+                }
+                return flag;
+            }
+
+            function checkName() {
+                const name = $("#edit_name").val();
+                console.log(name);
+                const reg_name = /^[\u4e00-\u9fa5]{2,4}$/;
+                //获取用户名
+                const flag = reg_name.test(name);
+                if (flag) {
+                    //姓名合法
+                    $("#edit_name").css("border", "");
+                } else {
+                    //姓名不合法
+                    $("#edit_name").css("border", "1px solid red");
+                }
+                return flag;
+            }
+
+
+            function checkPhone() {
+                const phone = $("#edit_telephone").val();
+                const reg_phone = /^1[3456789]\d{9}$/;
+                //获取手机号
+                const flag = reg_phone.test(phone);
+                if (flag) {
+                    //手机号合法
+                    $("#edit_telephone").css("border", "");
+                } else {
+                    //手机号不合法
+                    $("#edit_telephone").css("border", "1px solid red");
+                }
+                return flag;
+            }
+        </script>
+    </section>
+</section>
+
+<div id="footer"></div>
+<!--导入布局js，共享header和footer-->
+<script type="text/javascript" src="js/include.js"></script>
+</body>
+</html>

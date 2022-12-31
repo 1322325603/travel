@@ -1,68 +1,278 @@
 <!-- 头部 start -->
-    <header id="header">
-        <div class="top_banner">
-            <img src="images/top_banner.jpg" alt="">
-        </div>
-        <div class="shortcut">
-            <!-- 未登录状态  -->
-            <div class="login_out">
-                <a href="login.html">登录</a>
-                <a href="register.html">注册</a>
+<script src="js/axios-0.18.0.js"></script>
+<style>
+    .login {
+        width: 250px;
+        font-size: 12px;
+        display: none;
+    }
+    .login a{
+        font-size: 12px;
+        color: #a1a1a1;
+    }
+    .login .collection {
+        color: #ff7676;
+        margin: 0 6px 0 6px;
+        cursor:pointer;
+    }
+    .login_out a {
+        color: #000;
+        font-size: 12px;
+        margin: 0 10px;
+    }
+</style>
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">编辑用户</h4>
             </div>
-            <!-- 登录状态  -->
-            <div class="login">
-            	
-                <span>欢迎回来，admin</span>
-                <a href="myfavorite.html" class="collection">我的收藏</a>
-                <a href="javascript:loginOut();">退出</a>
-            </div>
-        </div>
-        <div class="header_wrap">
-            <div class="topbar">
-                <div class="logo">
-                    <a href="/"><img src="images/logo.jpg" alt=""></a>
+            <div class="modal-body">
+                <input type="hidden" id="edit_id">
+                <div class="form-group">
+                    <label for="edit_username">用户名</label>
+                    <input type="text" name="username" class="form-control" id="edit_username" disabled>
                 </div>
-                <div class="search">
-                    <input name="" type="text" placeholder="请输入路线名称" class="search_input" autocomplete="off">
-                    <a href="javascript:;" class="search-button">搜索</a>
+                <div class="form-group">
+                    <label for="edit_password">密码</label>
+                    <input type="text" name="edit_password" class="form-control" id="edit_password"
+                           placeholder="新密码">
                 </div>
-                <div class="hottel">
-                    <div class="hot_pic">
-                        <img src="images/hot_tel.jpg" alt="">
-                    </div>
-                    <div class="hot_tel">
-                        <p class="hot_time">客服热线(9:00-6:00)</p>
-                        <p class="hot_num">400-618-9090</p>
-                    </div>
+                <div class="form-group">
+                    <label for="edit_name">姓名</label>
+                    <input type="text" name="edit_name" class="form-control" id="edit_name" placeholder="姓名">
+                </div>
+                <div class="form-group">
+                    <label for="edit_email">邮箱</label>
+                    <input type="text" name="edit_email" class="form-control" id="edit_email" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="edit_telephone">手机号码</label>
+                    <input type="text" name="edit_telephone" class="form-control" id="edit_telephone"
+                           placeholder="手机号码">
                 </div>
             </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="hideEdit()" style="margin-right: 0;">取消</button>
+                <button class="btn btn-primary" onclick="submitEdit()" style="margin-right: 0;">确认修改</button>
+            </div>
         </div>
-    </header>
-    <!-- 头部 end -->
-     <!-- 首页导航 -->
-    <div class="navitem">
-        <ul class="nav">
-            <li class="nav-active"><a href="index.html">首页</a></li>
-            <li><a href="route_list.html">门票</a></li>
-            <li><a href="route_list.html">酒店</a></li>
-            <li><a href="route_list.html">香港车票</a></li>
-            <li><a href="route_list.html">出境游</a></li>
-            <li><a href="route_list.html">国内游</a></li>
-            <li><a href="route_list.html">港澳游</a></li>
-            <li><a href="route_list.html">抱团定制</a></li>
-            <li><a href="route_list.html">全球自由行</a></li>
-            <li><a href="favoriterank.html">收藏排行榜</a></li>
-        </ul>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        hideEdit();
+        let token = localStorage.getItem("token");
+        let flag = token != null && token != "";
+        let isAdmin=false;
+
+        if (flag) {
+            axios.get("/user/loginInfo", {
+                headers: {
+                    "token": token
+                }
+            }).then(function (response) {
+                let data = response.data;
+                if (data.code === 200) {
+                    let user = data.data;
+                    $("#span_username").html("你好," + user.name);
+                    if (user.id == 1){
+                        isAdmin=true;
+                    }
+                } else {
+                    localStorage.removeItem("token");
+                    flag = false;
+                }
+                if (flag) {
+                    $("#login").show();
+                    if (isAdmin){
+                        $("#edit").hide();
+                    }else {
+                        $("#manage").hide();
+                    }
+                    $("#login_out").hide();
+                } else {
+                    $("#login").hide();
+                    $("#login_out").show();
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
+    });
+</script>
+<header id="header">
+    <div class="top_banner">
+        <img src="images/top_banner.jpg" alt="">
+    </div>
+    <div class="shortcut">
+        <!-- 未登录状态  -->
+        <div id="login_out" class="login_out">
+            <a href="login.html">登录</a>
+            <a href="register.html">注册</a>
+        </div>
+        <!-- 登录状态  -->
+        <div class="login" id="login">
+
+            <span id="span_username"></span>
+            <a href="#" class="collection" onclick="edit()" id="edit">编辑信息</a>
+            <a href="userManage.html" class="collection" id="manage">管理用户</a>
+            <a href="javascript:loginOut();">退出</a>
+        </div>
+    </div>
+    <div class="header_wrap">
+        <div class="topbar">
+            <div class="logo">
+                <a href="/"><img src="images/logo.jpg" alt=""></a>
+            </div>
+            <div class="search">
+                <input name="" type="text" placeholder="请输入路线名称" class="search_input" autocomplete="off">
+                <a href="javascript:;" class="search-button">搜索</a>
+            </div>
+            <div class="hottel">
+                <div class="hot_pic">
+                    <img src="images/hot_tel.jpg" alt="">
+                </div>
+                <div class="hot_tel">
+                    <p class="hot_time">客服热线(9:00-6:00)</p>
+                    <p class="hot_num">400-618-9090</p>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- 首页导航 end -->
-<script src="js/axios-0.18.0.js"></script>
-<script>
-    function loginOut(){
-        axios.get("/user/loginOut").then(function (response) {
-            if(response.data.code==200){
+    <script src="js/axios-0.18.0.js"></script>
+    <script>
+        function loginOut() {
+            let token = localStorage.getItem("token");
+            axios.get("/logout", {
+                headers: {
+                    "token": token
+                }
+            }).then(function (response) {
+                localStorage.removeItem("token");
                 window.location.href = "index.html";
+            })
+        }
+        function submitEdit() {
+            if (checkEditName() && checkEditPhone() && checkEditPassword()) {
+                let id = $("#edit_id").val();
+                let password = $("#edit_password").val();
+                let name = $("#edit_name").val();
+                let telephone = $("#edit_telephone").val();
+                if (password === "") {
+                    password = null;
+                }
+                let token = localStorage.getItem("token");
+                axios.put("/user", {
+                    id: id,
+                    password: password,
+                    name: name,
+                    telephone: telephone
+                }, {
+                    headers: {
+                        'token': token
+                    }
+                }).then(function (response) {
+                    let data = response.data;
+                    if (data.code === 200) {
+                        window.location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
             }
-        })
-    }
-</script>
+        }
+
+        function edit() {
+            $("#editModal").modal("show");
+            let token = localStorage.getItem("token");
+            axios.get("/user/info?time="+new Date().getTime() , {
+                headers: {
+                    'token': token
+                }
+            }).then(function (response) {
+                let data = response.data;
+                if (data.code === 200) {
+                    data = data.data;
+                    $("#edit_id").val(data.id);
+                    $("#edit_username").val(data.username);
+                    $("#edit_name").val(data.name);
+                    $("#edit_email").val(data.email);
+                    $("#edit_telephone").val(data.telephone);
+                } else {
+                    alert(data.message);
+                }
+            })
+        }
+        function hideEdit() {
+            $("#editModal").modal("hide");
+        }
+
+        function checkEditPassword() {
+            //获取密码
+            const password = $("#edit_password").val();
+            //正则表达式
+            const reg_password = /^[a-zA-Z0-9]{6,12}$/;
+            const flag = reg_password.test(password) || password === "";
+            if (flag) {
+                $("#edit_password").css("border", "");
+            } else {
+
+                $("#edit_password").css("border", "1px solid red");
+            }
+            return flag;
+        }
+
+        function checkEditName() {
+            const name = $("#edit_name").val();
+            console.log(name);
+            const reg_name = /^[\u4e00-\u9fa5]{2,4}$/;
+            //获取用户名
+            const flag = reg_name.test(name);
+            if (flag) {
+                //姓名合法
+                $("#edit_name").css("border", "");
+            } else {
+                //姓名不合法
+                $("#edit_name").css("border", "1px solid red");
+            }
+            return flag;
+        }
+
+        function checkEditPhone() {
+            const phone = $("#edit_telephone").val();
+            const reg_phone = /^1[3456789]\d{9}$/;
+            //获取手机号
+            const flag = reg_phone.test(phone);
+            if (flag) {
+                //手机号合法
+                $("#edit_telephone").css("border", "");
+            } else {
+                //手机号不合法
+                $("#edit_telephone").css("border", "1px solid red");
+            }
+            return flag;
+        }
+    </script>
+</header>
+<!-- 头部 end -->
+<!-- 首页导航 -->
+<div class="navitem">
+    <ul class="nav">
+        <li class="nav-active"><a href="index.html">首页</a></li>
+        <li><a href="route_list.html">门票</a></li>
+        <li><a href="route_list.html">酒店</a></li>
+        <li><a href="route_list.html">香港车票</a></li>
+        <li><a href="route_list.html">出境游</a></li>
+        <li><a href="route_list.html">国内游</a></li>
+        <li><a href="route_list.html">港澳游</a></li>
+        <li><a href="route_list.html">抱团定制</a></li>
+        <li><a href="route_list.html">全球自由行</a></li>
+        <li><a href="favoriterank.html">收藏排行榜</a></li>
+    </ul>
+</div>
     

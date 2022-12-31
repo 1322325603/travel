@@ -230,10 +230,10 @@
         $("#registerForm").submit(function () {
             //获取表单数据
             var formData = $(this).serializeJson();
-            document.getElementById("register_button").disabled = true;
             if(checkUsername() && checkPassword() && checkName() && checkEmail() && checkPhone()){
+                document.getElementById("register_button").disabled = true;
                 //发送ajax请求
-                axios.post("register", formData)
+                axios.post("/register", formData)
                     .then(function (response) {
                         document.getElementById("register_button").disabled = false;
                         //获取响应数据
